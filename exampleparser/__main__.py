@@ -16,23 +16,17 @@
 # limitations under the License.
 #
 
+import sys
+import json
+import logging
+
+from nomad.utils import configure_logging
 from nomad.datamodel import EntryArchive
-from nomad.parsing import FairdiParser
-from nomad.datamodel.metainfo.public import section_run as Run
+from exampleparser import ExampleParser
 
-from exampleparser import metainfo  # pylint: disable=unused-import
 
-'''
-This is a hello world style example for an example parser/converter.
-'''
-
-class ExampleParser(FairdiParser):
-    def __init__(self):
-        super().__init__(name='parsers/example', code_name='EXAMPLE')
-
-    def run(self, mainfile: str, archive: EntryArchive, logger):
-        # Log a hello world, just to get us started. TODO remove from an actual parser.
-        logger.info('Hello World')
-
-        run = archive.m_create(Run)
-        run.program_name = 'EXAMPLE'
+if __name__ == "__main__":
+    configure_logging(console_log_level=logging.DEBUG)
+    archive = EntryArchive()
+    ExampleParser().run(sys.argv[1], archive, logging)
+    json.dump(archive.m_to_dict(), sys.stdout, indent=2)
